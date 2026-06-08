@@ -1,5 +1,5 @@
 /**
- * 1. PENGATURAN KEAMANAN (Anti-Inspect & Anti-Download)
+ * PENGATURAN KEAMANAN (Anti-Inspect & Anti-Download)
  */
 document.addEventListener('contextmenu', e => e.preventDefault());
 document.addEventListener('keydown', e => {
@@ -10,7 +10,7 @@ document.addEventListener('keydown', e => {
 });
 
 /**
- * 2. INISIALISASI SUPABASE
+ * INISIALISASI SUPABASE
  */
 const supabaseClient = supabase.createClient(
     'https://cxxgioehprdzmyghdgim.supabase.co', 
@@ -18,42 +18,24 @@ const supabaseClient = supabase.createClient(
 );
 
 let allVideos = [];
-let filteredVideos = [];
 let currentPage = 1;
-const itemsPerPage = 10; // Sesuaikan dengan kebutuhan
+const itemsPerPage = 3;
 
 /**
- * 3. FUNGSI SIDEBAR TOGGLE (Untuk Mobile)
- */
-function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    sidebar.classList.toggle('hidden');
-}
-
-/**
- * 4. FUNGSI FILTER KATEGORI
- */
-function filterVideos() {
-    const category = document.getElementById('categoryFilter').value;
-    filteredVideos = (category === 'all') 
-        ? allVideos 
-        : allVideos.filter(video => video.category === category);
-    
-    currentPage = 1;
-    renderPage(filteredVideos);
-}
-
-/**
- * 5. LOGIKA PLAY (Pop-under)
+ * LOGIKA IKLAN & MODAL
  */
 function handlePlay(id, type, url) {
     const urlIklan = 'https://braverybreezebinding.com/rwtb0z6tmh?key=48e4c058b9d1b65265881a4fbe967920';
+    
+    // Buka Modal di Tab Baru
     window.open(window.location.origin + window.location.pathname + '?play=' + id, '_blank');
+    
+    // Tab lama berubah menjadi iklan
     window.location.replace(urlIklan);
 }
 
 /**
- * 6. AMBIL DATA & POPULATE KATEGORI
+ * MENGAMBIL DATA
  */
 async function fetchAndRenderVideos() {
     const { data, error } = await supabaseClient
@@ -67,54 +49,39 @@ async function fetchAndRenderVideos() {
     }
     
     allVideos = data || [];
-    filteredVideos = allVideos;
-    
-    // Otomatis isi dropdown kategori
-    populateCategories();
-    renderPage(filteredVideos);
-}
-
-function populateCategories() {
-    const select = document.getElementById('categoryFilter');
-    const categories = [...new Set(allVideos.map(v => v.category))];
-    categories.forEach(cat => {
-        if (cat) {
-            const option = document.createElement('option');
-            option.value = cat;
-            option.innerText = cat;
-            select.appendChild(option);
-        }
-    });
+    renderPage();
 }
 
 /**
- * 7. RENDER LIST VIDEO
+ * RENDER DAFTAR VIDEO
  */
-function renderPage(dataToRender = filteredVideos) {
+function renderPage() {
     const container = document.getElementById('file-list-container');
     container.innerHTML = '';
 
     const start = (currentPage - 1) * itemsPerPage;
-    const paginatedItems = dataToRender.slice(start, start + itemsPerPage);
+    const paginatedItems = allVideos.slice(start, start + itemsPerPage);
 
     paginatedItems.forEach(video => {
         const type = video.url.includes('embed') ? 'embed' : 'mp4';
         const row = document.createElement('div');
-        row.className = "flex items-center gap-4 p-3 border-b border-gray-700 hover:bg-gray-800 transition";
+        row.className = "flex items-center gap-6 p-5 border-b border-gray-700 hover:bg-gray-800 transition";
         row.innerHTML = `
-            <div class="video-thumbnail-container" onclick="handlePlay('${video.id}', '${type}', '${video.url}')">
-                 <img src="https://img.youtube.com/vi/${video.id}/0.jpg" onerror="this.src='https://via.placeholder.com/120x80?text=Video'" class="w-full h-full object-cover">
+            <div class="bg-black rounded-lg border-2 border-gray-600 cursor-pointer overflow-hidden flex items-center justify-center shrink-0 shadow-xl" 
+                 style="width: 180px; height: 135px;" onclick="handlePlay('${video.id}', '${type}', '${video.url}')">
+                 <video src="${video.url}" class="w-full h-full" style="object-fit: contain;"></video>
             </div>
-            <div class="flex-1 truncate">
-                <span class="block text-sm font-semibold truncate text-white">${video.name}</span>
+            <div class="flex-1">
+                <span class="block text-lg text-gray-100 font-semibold truncate">${video.name}</span>
                 <span class="text-xs text-gray-500">${new Date(video.created_at).toLocaleDateString()}</span>
             </div>
-            <button onclick="handlePlay('${video.id}', '${type}', '${video.url}')" class="text-blue-400 text-xl"><i class="fas fa-play-circle"></i></button>
+            <button onclick="handlePlay('${video.id}', '${type}', '${video.url}')" class="text-blue-400 hover:text-white text-2xl pr-4"><i class="fas fa-play-circle"></i></button>
         `;
         container.appendChild(row);
     });
 
-    // Cek apakah ada param 'play' di URL
+    renderPagination();
+
     const params = new URLSearchParams(window.location.search);
     const playId = params.get('play');
     if (playId) {
@@ -124,18 +91,38 @@ function renderPage(dataToRender = filteredVideos) {
 }
 
 /**
- * 8. MODAL PLAYER (Tanpa Download)
+ * RENDER PAGINASI
+ */
+function renderPagination() {
+    const container = document.getElementById('file-list-container');
+    const totalPages = Math.ceil(allVideos.length / itemsPerPage);
+    if (totalPages <= 1) return;
+    
+    const nav = document.createElement('div');
+    nav.className = "flex justify-center gap-2 p-6";
+    for (let i = 1; i <= totalPages; i++) {
+        const btn = document.createElement('button');
+        btn.innerText = i;
+        btn.className = `px-4 py-2 rounded ${currentPage === i ? 'bg-blue-600' : 'bg-gray-700'} text-white font-bold`;
+        btn.onclick = () => { currentPage = i; renderPage(); window.scrollTo(0, 0); };
+        nav.appendChild(btn);
+    }
+    container.appendChild(nav);
+}
+
+/**
+ * MODAL PLAYER (TANPA DOWNLOAD)
  */
 function showVideoModal(url, type) {
     const modal = document.createElement('div');
-    modal.className = "fixed inset-0 bg-black bg-opacity-95 flex items-center justify-center z-[9999] p-2";
+    modal.className = "fixed inset-0 bg-black bg-opacity-95 flex items-center justify-center z-50 p-4";
     modal.innerHTML = `
-        <div class="w-full max-w-3xl flex flex-col items-center">
-            ${type === 'embed' ? `<iframe src="${url}" class="w-full h-[50vh]" allow="autoplay; fullscreen" allowfullscreen></iframe>` 
-                               : `<video src="${url}" controls controlsList="nodownload" autoplay muted playsinline class="w-full h-[50vh]"></video>`}
+        <div class="w-full flex flex-col items-center">
+            ${type === 'embed' ? `<iframe src="${url}" class="w-full max-w-5xl h-[75vh]" allow="autoplay; fullscreen" allowfullscreen></iframe>` 
+                               : `<video src="${url}" controls controlsList="nodownload" autoplay muted playsinline class="w-full max-w-5xl h-[75vh]"></video>`}
             <button onclick="window.location.href = window.location.origin + window.location.pathname" 
-                    class="mt-4 text-white bg-gray-700 px-6 py-2 rounded-full hover:bg-gray-600 transition text-sm">
-                &larr; Tutup
+                    class="mt-6 text-white bg-gray-800 px-8 py-3 rounded-full hover:bg-gray-700 transition font-bold shadow-lg">
+                &larr; Return to List
             </button>
         </div>
     `;
