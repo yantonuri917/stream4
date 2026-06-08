@@ -1,27 +1,4 @@
 
-// Tambahkan ini ke dalam fungsi IIFE di atas
-const adStyle = document.createElement('style');
-adStyle.innerHTML = `
-    /* Wadah iklan untuk mencegah layout berantakan */
-    .ad-container-sticky {
-        width: 100%;
-        overflow-x: auto; /* Memungkinkan iklan discroll ke samping di HP */
-        display: flex;
-        justify-content: center;
-        background: #111827;
-        padding: 5px 0;
-    }
-    
-    /* Memaksa iframe iklan agar menyesuaikan lebar layar di HP */
-    @media (max-width: 728px) {
-        .ad-container-sticky iframe {
-            transform: scale(0.5); /* Mengecilkan iklan 50% di HP */
-            transform-origin: top center;
-            height: 45px !important; /* Menyesuaikan tinggi setelah dikecilkan */
-        }
-    }
-`;
-document.head.appendChild(adStyle);
 
 /**
  * PENGATURAN KEAMANAN (Anti-Inspect & Anti-Download)
