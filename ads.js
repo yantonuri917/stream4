@@ -1,7 +1,7 @@
 (function() {
     const CONFIG = {
         enableHeaderAd: true,
-        enableBottomStickyAd: true
+        enableTopStickyAd: true
     };
 
     window.runAds = function() {
@@ -48,7 +48,7 @@
     }
 
     window.addEventListener('DOMContentLoaded', function() {
-        // Header Ad
+        // Header Ad (Iklan di dalam tag header)
         if (CONFIG.enableHeaderAd) {
             const header = document.querySelector('header');
             if (header) {
@@ -59,22 +59,30 @@
             }
         }
 
-        // Bottom Sticky Ad
-        if (CONFIG.enableBottomStickyAd) {
-            const bottomAdContainer = document.createElement('div');
-            bottomAdContainer.id = 'sticky-ad-wrapper';
-            // Tambahkan box-sizing agar padding tidak merusak lebar
-            bottomAdContainer.style.cssText = 'position:fixed; bottom:0; left:50%; transform:translateX(-50%); z-index:9999; width:100%; max-width:728px; display:flex; justify-content:center; align-items:center; background-color:rgba(24, 36, 54, 0.9); box-shadow:0 -4px 12px rgba(0,0,0,0.5); overflow:visible; box-sizing:border-box;';
+        // Top Sticky Ad (Iklan Sticky di bagian paling atas layar)
+        if (CONFIG.enableTopStickyAd) {
+            const topAdContainer = document.createElement('div');
+            topAdContainer.id = 'sticky-ad-wrapper';
+            
+            // Posisi di top, z-index tinggi, box-sizing untuk responsif
+            topAdContainer.style.cssText = 'position:fixed; top:0; left:50%; transform:translateX(-50%); z-index:10000; width:100%; max-width:728px; display:flex; justify-content:center; align-items:center; background-color:rgba(24, 36, 54, 0.9); box-shadow:0 4px 12px rgba(0,0,0,0.5); overflow:visible; box-sizing:border-box;';
             
             const closeBtn = document.createElement('button');
             closeBtn.innerHTML = '&times;';
-            closeBtn.style.cssText = 'position:absolute; top:-25px; right:0; background:rgba(0,0,0,0.6); color:white; border:none; cursor:pointer; font-size:16px; padding:2px 8px; border-radius:4px 4px 0 0;';
-            closeBtn.onclick = function() { bottomAdContainer.style.display = 'none'; };
+            // Tombol close pindah ke bawah iklan agar mudah diakses
+            closeBtn.style.cssText = 'position:absolute; bottom:-25px; right:0; background:rgba(0,0,0,0.6); color:white; border:none; cursor:pointer; font-size:16px; padding:2px 8px; border-radius:0 0 4px 4px;';
+            closeBtn.onclick = function() { 
+                topAdContainer.style.display = 'none'; 
+                document.body.style.paddingTop = '0px'; // Reset padding saat iklan ditutup
+            };
             
-            bottomAdContainer.appendChild(closeBtn);
-            document.body.appendChild(bottomAdContainer);
+            topAdContainer.appendChild(closeBtn);
+            document.body.appendChild(topAdContainer);
 
-            injectAdIsolated(bottomAdContainer, '64e783bd557c30cbf66293b5c5fda05f', 728, 90, 'https://braverybreezebinding.com/64e783bd557c30cbf66293b5c5fda05f/invoke.js');
+            // Memberi ruang pada body agar konten tidak tertutup iklan
+            document.body.style.paddingTop = '90px';
+
+            injectAdIsolated(topAdContainer, '64e783bd557c30cbf66293b5c5fda05f', 728, 90, 'https://braverybreezebinding.com/64e783bd557c30cbf66293b5c5fda05f/invoke.js');
         }
     });
 })();
