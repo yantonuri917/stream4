@@ -1,30 +1,4 @@
-/**
- * PENGATURAN RESPONSIVITAS (Dijalankan otomatis saat app dimuat)
- */
-(function() {
-    const style = document.createElement('style');
-    style.innerHTML = `
-        /* Mencegah overflow horizontal pada perangkat mobile */
-        html, body {
-            overflow-x: hidden;
-            width: 100%;
-        }
-        
-        /* Membuat thumbnail mengecil di layar HP */
-        @media (max-width: 640px) {
-            .video-thumbnail-container {
-                width: 120px !important;
-                height: 90px !important;
-            }
-            .gap-6 { gap: 12px !important; }
-            .p-5 { padding: 10px !important; }
-        }
 
-        /* Memastikan konten utama tidak meluber */
-        .flex { flex-wrap: wrap; }
-    `;
-    document.head.appendChild(style);
-})();
 
 
 /**
