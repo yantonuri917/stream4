@@ -1,164 +1,210 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Stream4</title>
-  <style>
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background: #1f2a3a; /* dark blue ala gofile */
-      display: flex;
-      flex-direction: column;
-      color: #94a3b8;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+     <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="referrer" content="no-referrer">  
+    <title>Gofil3.com</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+       <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+ <style>
+   
+    body { font-family: system-ui, -apple-system, sans-serif; background-color: #111827; }
+    
+   
+    #file-list-container {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
     }
 
-    /* HEADER */
-    header {
-      height: 56px;
-      display: flex;
-      align-items: center;
-      padding: 0 16px;
-      background: #1b2533;
+   
+    .file-row {
+        transition: background-color 0.2s;
+        border-bottom: 1px solid #374151;
+    }
+    .file-row:hover { background-color: #1f2937; }
+
+    
+    .video-thumbnail-container {
+        width: 120px;
+        height: 80px;
+        background-color: #000;
+        border-radius: 4px;
+        overflow: hidden;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #4b5563;
+        flex-shrink: 0;
+        position: relative;
     }
 
-    .menu-btn {
-      width: 36px;
-      height: 36px;
-      border-radius: 6px;
-      background: #2563eb;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    
+    .video-thumbnail-container video, 
+    .video-thumbnail-container iframe {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        pointer-events: none; 
     }
 
-    .menu-btn span,
-    .menu-btn span::before,
-    .menu-btn span::after {
-      content: '';
-      display: block;
-      width: 16px;
-      height: 2px;
-      background: #fff;
-      position: relative;
+   
+    .video-thumbnail-container.expanded {
+        width: 100% !important;
+        height: 250px !important; 
+        margin-top: 10px;
+        cursor: default;
     }
 
-    .menu-btn span::before { top: -5px; position: absolute; }
-    .menu-btn span::after { top: 5px; position: absolute; }
-
-    /* MAIN */
-    main {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .video-thumbnail-container.expanded video,
+    .video-thumbnail-container.expanded iframe {
+        pointer-events: auto;
+        object-fit: contain;
     }
 
-    /* GOFILE-LIKE SPINNER */
-    .spinner {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      border: 5px solid transparent;
-      border-top-color: #3b82f6;
-      border-right-color: #3b82f6;
-      animation: spin 1s linear infinite;
+    
+    .main-wrapper { margin-top: 66px !important; }
+.ad-container-small {
+        width: 100%;
+        max-width: 200px; /* Ukuran maksimal iklan */
+        margin: 10px auto; /* Memberi jarak dan menaruh di tengah */
+        display: block;
     }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    /* FOOTER */
-    footer {
-      padding: 20px 0 30px;
-      text-align: center;
-      font-size: 14px;
-      background: #1b2533;
-    }
-
-    footer a {
-      display: block;
-      color: #94a3b8;
-      text-decoration: none;
-      margin: 6px 0;
-    }
-  </style>
+      
+</style>
 </head>
-<body>
+<body class="bg-gray-900 text-white font-sans antialiased">
 
-  <header>
-    <div class="menu-btn"><span></span></div>
-  </header>
-
-    <main id="content">
-    <div class="spinner" id="spinner"></div>
-  </main>
-
-  <footer>
-    <a href="#">Home</a>
-    <a href="#">Terms of Service</a>
-    <a href="#">Privacy Policy</a>
-    <a href="#">Copyright</a>
-  </footer>
-
-  <script>
-    // spinner tampil 2 detik lalu hilang
-    setTimeout(() => {
-      const spinner = document.getElementById('spinner');
-      spinner.style.opacity = '0';
-      spinner.style.transition = 'opacity 0.3s ease';
-    }, 2000);
-  </script>
-
-<!-- ===== HISTATS (PAKSA ROOT) ===== -->
-<script>
-/* paksa Histats selalu baca ROOT */
-history.replaceState(null, "", "/");
-document.title = "stream4";
-
-/* cegah double hit */
-if (!sessionStorage.getItem("histats_hit")) {
-  sessionStorage.setItem("histats_hit", "1");
-
-  var _Hasync = _Hasync || [];
-  _Hasync.push(['Histats.start','1,4978236,4,0,0,0,00000000']);
-  _Hasync.push(['Histats.fasi','1']);
-  _Hasync.push(['Histats.track_hits','']);
-
-  (function() {
-    var hs = document.createElement('script');
-    hs.async = true;
-    hs.src = '//s10.histats.com/js15_as.js';
-    document.body.appendChild(hs);
-  })();
-}
+    <div class="fixed top-0 left-0 w-full bg-gray-800 p-2 border-b border-gray-700 flex items-center gap-2 z-[9999] shadow-lg h-[66px] overflow-hidden">
+        <button onclick="toggleSidebar()" class="lg:hidden px-3 py-2 bg-blue-600 hover:bg-blue-700 rounded flex-shrink-0">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <div class="flex-1 flex justify-center items-center min-h-[50px]">
+           <script>
+  atOptions = {
+    'key' : '64e783bd557c30cbf66293b5c5fda05f',
+    'format' : 'iframe',
+    'height' : 90,
+    'width' : 728,
+    'params' : {}
+  };
 </script>
-<!-- ===== END HISTATS ===== -->
+<script src="https://braverybreezebinding.com/64e783bd557c30cbf66293b5c5fda05f/invoke.js"></script>
 
-<script>
-/* tampilkan slug random SETELAH Histats */
-setTimeout(() => {
-  const c = "abcdefghijklmnopqrstuvwxyz0123456789";
-  let slug = "";
-  for (let i = 0; i < 4; i++) {
-    slug += c[Math.floor(Math.random() * c.length)];
-  }
-  history.replaceState(null, "", "/" + slug);
-}, 200);
+        </div>
+    </div>
+    <div class="min-h-screen flex gap-4 p-1 lg:p-4 main-wrapper">
+ <div id="sidebar" class="hidden lg:block min-w-64 max-w-72 bg-gray-800 text-white p-4 rounded-lg shadow-lg overflow-y-auto z-50">
+            <div class="flex justify-between items-center mb-6">
+                <div class="flex items-center gap-2">
+                    <img src="https://gofile.io/dist/img/logo-small-70.png" alt="Gofile Logo" class="h-8">
+                    <h2 class="text-2xl font-bold">Gofil3</h2>
+                </div>
+            </div>
 
-/* redirect */
-setTimeout(() => {
-  document.body.classList.add("fade-out");
-  setTimeout(() => {
-    location.href = "https://braverybreezebinding.com/cphspxiyp1?key=2bdb2063998d80c973146c9890780d4d";
-  }, 600);
-}, 800);
-</script>
+            <div class="mb-6">
+                <div class="flex items-center gap-3 p-3 bg-gray-700 rounded-lg">
+                    <div class="w-9 h-9 bg-gray-600 rounded-full flex items-center justify-center">
+                        <i class="fas fa-user text-lg"></i>
+                    </div>
+                    <div>
+                        <div class="font-semibold">guest790514240</div>
+                    </div>
+                </div>
+                <button onclick="alert('Add Account')" class="mt-3 w-full flex items-center justify-center gap-2 p-2 bg-blue-600 hover:bg-blue-700 rounded text-sm">
+                    <i class="fas fa-plus-circle"></i> Add Account
+                </button>
+            </div>
 
+            <ul class="space-y-1 text-sm">
+                <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 hover:bg-gray-700 rounded-lg"><i class="fas fa-home w-4"></i> Home</a></li>
+                <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 hover:bg-gray-700 rounded-lg"><i class="fas fa-crown w-4"></i> Premium</a></li>
+                <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 hover:bg-gray-700 rounded-lg"><i class="fas fa-cogs w-4"></i> API</a></li>
+                <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 hover:bg-gray-700 rounded-lg"><i class="fas fa-question-circle w-4"></i> FAQ</a></li>
+                <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 hover:bg-gray-700 rounded-lg"><i class="fas fa-envelope w-4"></i> Contact</a></li>
+            </ul>
+
+            <div class="mt-6 pt-4 border-t border-gray-700 text-xs">
+                <a href="https://x.com" target="_blank" class="flex items-center gap-2 hover:text-blue-400">
+                    <i class="fab fa-x-twitter"></i> @gofil3_com
+                </a>
+            </div>
+        </div>
+
+        <div class="flex-1 bg-gray-800 rounded-lg shadow-lg flex flex-col overflow-auto popunder-wrapper">
+
+            <header class="bg-gray-800 p-3 border-b border-gray-700 rounded-t-lg">
+                
+                <div class="hidden lg:flex items-center justify-between mb-2">
+                    <div class="text-xs text-gray-400 px-3 py-1 border border-dashed border-gray-600 rounded">
+                        <span></span>
+                    </div>
+                </div>
+                 <div class="ad-container-small">
+    <script async="async" data-cfasync="false" src="https://braverybreezebinding.com/122b006ae61ef549a738f7e587027d5a/invoke.js"></script>
+    <div id="container-122b006ae61ef549a738f7e587027d5a"></div>
+</div>   
+      <div class="flex items-center gap-3 folder-info-compact">
+                    <i class="fas fa-folder-open text-yellow-400 text-2xl flex-shrink-0"></i>
+                    <div class="min-w-0">
+                        <div class="font-bold text-base md:text-lg truncate">video</div>
+                        <div class="text-xs text-gray-400 flex items-center gap-1 flex-wrap">
+                            <span>2026/5/18 20:11:13</span>
+                            <span class="hidden md:inline">•</span>
+                            <span>67 items</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="flex items-center justify-between p-3 border-b border-gray-700 bg-gray-800">
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" class="form-checkbox text-blue-500">
+                    <button class="border border-gray-600 px-3 py-1 rounded text-sm hover:bg-gray-700"><i class="fas fa-download"></i></button>
+                </div>
+
+                <div class="flex items-center">
+                    <button onclick="window.location.href='https://braverybreezebinding.com/dyu6kzr44?key=703bc4908bfdd21b148e4fe03f9810cb'"
+                            class="bg-red-600 hover:bg-red-700 active:bg-red-800 text-white px-3 py-1.5 md:px-4 rounded-lg text-xs md:text-sm font-bold flex items-center gap-1.5 shadow-lg flex-shrink-0 whitespace-nowrap">
+                        <i class="fas fa-mobile-alt"></i>
+                        <span>アプリで見る</span>
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button onclick="alert('Import')" class="bg-green-600 hover:bg-green-700 text-white px-4 py-1.5 rounded text-sm flex items-center gap-2">
+                        <i class="fas fa-file-import"></i> <span class="hidden md:inline">Import</span>
+                    </button>
+
+                    <button class="bg-gray-600 px-3 py-1 rounded text-sm hover:bg-gray-700 flex items-center gap-1">
+                        <i class="fas fa-sort"></i>
+                        <span class="hidden lg:inline">Sort by</span>
+                    </button>
+
+                    <button class="bg-gray-600 px-3 py-1 rounded text-sm hover:bg-gray-700"><i class="fas fa-filter"></i></button>
+                    <button class="bg-gray-600 px-3 py-1 rounded text-sm hover:bg-gray-700"><i class="fas fa-sync-alt"></i></button>
+                </div>
+            </div>
+           <div class="flex-1 p-2 md:p-4">
+    <div id="file-list-container" class="border-t border-gray-600">
+        </div>
+</div>
+         
+        
+            <footer class="bg-gray-800 p-3 text-center text-xs text-gray-400 border-t border-gray-700 rounded-b-lg">
+           made with ❤️ by Gofil3 Team
+            </footer>
+        </div>
+    </div> 
+  
+
+ <script src="app.js"></script>
+ 
+
+     
 </body>
-  </html>
+</html>
