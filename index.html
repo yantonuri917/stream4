@@ -73,8 +73,34 @@
         margin: 10px auto; /* Memberi jarak dan menaruh di tengah */
         display: block;
     }
+
       
+    /* Mencegah konten melebar lebih dari layar HP */
+    html, body {
+        overflow-x: hidden;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Pastikan gambar/video tidak memaksa container melebar */
+    img, video, iframe {
+        max-width: 100%;
+        height: auto;
+    }
+
+    /* Perbaikan khusus untuk row video agar tidak kaku */
+    .flex {
+        flex-wrap: wrap; /* Memungkinkan elemen turun ke bawah jika layar sempit */
+    }
+
+    /* Pastikan modal player tidak melebihi lebar layar */
+    .fixed.inset-0 {
+        width: 100vw;
+        max-width: 100%;
+    }
 </style>
+      
 </head>
 <body class="bg-gray-900 text-white font-sans antialiased">
 
