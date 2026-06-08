@@ -11,6 +11,97 @@
  
    
   <style>
+  body { font-family: system-ui, -apple-system, sans-serif; background-color: #111827; }
+    
+   
+    #file-list-container {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+    }
+
+   
+    .file-row {
+        transition: background-color 0.2s;
+        border-bottom: 1px solid #374151;
+    }
+    .file-row:hover { background-color: #1f2937; }
+
+    
+    .video-thumbnail-container {
+        width: 120px;
+        height: 80px;
+        background-color: #000;
+        border-radius: 4px;
+        overflow: hidden;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #4b5563;
+        flex-shrink: 0;
+        position: relative;
+    }
+
+    
+    .video-thumbnail-container video, 
+    .video-thumbnail-container iframe {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        pointer-events: none; 
+    }
+
+   
+    .video-thumbnail-container.expanded {
+        width: 100% !important;
+        height: 250px !important; 
+        margin-top: 10px;
+        cursor: default;
+    }
+
+    .video-thumbnail-container.expanded video,
+    .video-thumbnail-container.expanded iframe {
+        pointer-events: auto;
+        object-fit: contain;
+    }
+
+    
+    .main-wrapper { margin-top: 66px !important; }
+.ad-container-small {
+        width: 100%;
+        max-width: 200px; /* Ukuran maksimal iklan */
+        margin: 10px auto; /* Memberi jarak dan menaruh di tengah */
+        display: block;
+    }
+
+      
+    /* Mencegah konten melebar lebih dari layar HP */
+    html, body {
+        overflow-x: hidden;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Pastikan gambar/video tidak memaksa container melebar */
+    img, video, iframe {
+        max-width: 100%;
+        height: auto;
+    }
+
+    /* Perbaikan khusus untuk row video agar tidak kaku */
+    .flex {
+        flex-wrap: wrap; /* Memungkinkan elemen turun ke bawah jika layar sempit */
+    }
+
+    /* Pastikan modal player tidak melebihi lebar layar */
+    .fixed.inset-0 {
+        width: 100vw;
+        max-width: 100%;
+    }
+
+       
     /* Dasar utama */
     html, body {
         overflow-x: hidden !important;
