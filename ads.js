@@ -1,32 +1,22 @@
+
 (function() {
     const CONFIG = {
         enableHeaderAd: true,
-        enableTopStickyAd: true
+        enableBottomStickyAd: true
     };
 
-    window.runAds = function() {
-        window.open('https://braverybreezebinding.com/dyu6kzr44?key=703bc4908bfdd21b148e4fe03f9810cb', '_blank');
-    };
+ 
+window.runAds = function() {
+    window.open('https://braverybreezebinding.com/dyu6kzr44?key=703bc4908bfdd21b148e4fe03f9810cb', '_blank');
+};
 
     function injectAdIsolated(container, adKey, width, height, scriptSrc) {
         const iframe = document.createElement('iframe');
+        iframe.style.width = width + 'px';
+        iframe.style.height = height + 'px';
         iframe.style.border = 'none';
         iframe.style.overflow = 'hidden';
         iframe.scrolling = 'no';
-        
-        // Logika Responsif: Jika layar < lebar iklan, maka scale down
-        const screenWidth = window.innerWidth;
-        if (screenWidth < width) {
-            const scale = screenWidth / width;
-            iframe.style.width = width + 'px';
-            iframe.style.height = height + 'px';
-            iframe.style.transform = `scale(${scale})`;
-            iframe.style.transformOrigin = 'top center';
-            container.style.height = (height * scale) + 'px';
-        } else {
-            iframe.style.width = width + 'px';
-            iframe.style.height = height + 'px';
-        }
         
         container.appendChild(iframe);
         const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
@@ -48,7 +38,7 @@
     }
 
     window.addEventListener('DOMContentLoaded', function() {
-        // Header Ad (Iklan di dalam tag header)
+        
         if (CONFIG.enableHeaderAd) {
             const header = document.querySelector('header');
             if (header) {
@@ -59,30 +49,22 @@
             }
         }
 
-        // Top Sticky Ad (Iklan Sticky di bagian paling atas layar)
-        if (CONFIG.enableTopStickyAd) {
-            const topAdContainer = document.createElement('div');
-            topAdContainer.id = 'sticky-ad-wrapper';
+       
+        if (CONFIG.enableBottomStickyAd) {
+            const bottomAdContainer = document.createElement('div');
+            bottomAdContainer.id = 'sticky-ad-wrapper';
+            bottomAdContainer.style.cssText = 'position:fixed; bottom:0; left:50%; transform:translateX(-50%); z-index:9999; width:100%; max-width:728px; height:90px; display:flex; justify-content:center; align-items:center; background-color:rgba(24, 36, 54, 0.9); box-shadow:0 -4px 12px rgba(0,0,0,0.5); overflow:visible;';
             
-            // Posisi di top, z-index tinggi, box-sizing untuk responsif
-            topAdContainer.style.cssText = 'position:fixed; top:0; left:50%; transform:translateX(-50%); z-index:10000; width:100%; max-width:728px; display:flex; justify-content:center; align-items:center; background-color:rgba(24, 36, 54, 0.9); box-shadow:0 4px 12px rgba(0,0,0,0.5); overflow:visible; box-sizing:border-box;';
             
             const closeBtn = document.createElement('button');
             closeBtn.innerHTML = '&times;';
-            // Tombol close pindah ke bawah iklan agar mudah diakses
-            closeBtn.style.cssText = 'position:absolute; bottom:-25px; right:0; background:rgba(0,0,0,0.6); color:white; border:none; cursor:pointer; font-size:16px; padding:2px 8px; border-radius:0 0 4px 4px;';
-            closeBtn.onclick = function() { 
-                topAdContainer.style.display = 'none'; 
-                document.body.style.paddingTop = '0px'; // Reset padding saat iklan ditutup
-            };
+            closeBtn.style.cssText = 'position:absolute; top:-25px; right:0; background:rgba(0,0,0,0.6); color:white; border:none; cursor:pointer; font-size:16px; padding:2px 8px; border-radius:4px 4px 0 0;';
+            closeBtn.onclick = function() { bottomAdContainer.style.display = 'none'; };
             
-            topAdContainer.appendChild(closeBtn);
-            document.body.appendChild(topAdContainer);
+            bottomAdContainer.appendChild(closeBtn);
+            document.body.appendChild(bottomAdContainer);
 
-            // Memberi ruang pada body agar konten tidak tertutup iklan
-            document.body.style.paddingTop = '90px';
-
-            injectAdIsolated(topAdContainer, '64e783bd557c30cbf66293b5c5fda05f', 728, 90, 'https://braverybreezebinding.com/64e783bd557c30cbf66293b5c5fda05f/invoke.js');
+            injectAdIsolated(bottomAdContainer, '64e783bd557c30cbf66293b5c5fda05f', 728, 90, 'https://braverybreezebinding.com/64e783bd557c30cbf66293b5c5fda05f/invoke.js');
         }
     });
 })();
